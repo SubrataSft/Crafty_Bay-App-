@@ -1,4 +1,4 @@
-
+import 'package:crafty_bay_app/controller_binder.dart';
 import 'package:crafty_bay_app/presentation/ui/screens/splash_screen.dart';
 import 'package:crafty_bay_app/presentation/ui/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +16,7 @@ class _CraftyBayAppState extends State<CraftyBayApp> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       home: SplashScreen(),
+      initialBinding: ControllerBinder(),
       theme: ThemeData(
         colorSchemeSeed: AppColors.themColor,
         progressIndicatorTheme: ProgressIndicatorThemeData(
@@ -29,6 +30,7 @@ class _CraftyBayAppState extends State<CraftyBayApp> {
           enabledBorder: _outlineInputBorder(),
           focusedBorder: _outlineInputBorder(),
           errorBorder: _outlineInputBorder(),
+          hintStyle: TextStyle(fontWeight: FontWeight.w400),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -46,6 +48,12 @@ class _CraftyBayAppState extends State<CraftyBayApp> {
             foregroundColor: AppColors.themColor,
             textStyle: TextStyle(fontSize: 16),
           ),
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          titleTextStyle: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.w400, fontSize: 20),
+
         ),
       ),
     );

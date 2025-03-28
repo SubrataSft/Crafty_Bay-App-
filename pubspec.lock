@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  carousel_slider:
+    dependency: "direct main"
+    description:
+      name: carousel_slider
+      sha256: "7b006ec356205054af5beaef62e2221160ea36b90fb70a35e4deacd49d0349ae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
   characters:
     dependency: transitive
     description:
@@ -115,6 +123,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  item_count_number_button:
+    dependency: "direct main"
+    description:
+      name: item_count_number_button
+      sha256: b83ce20dd013e3004bb66a0f4240d20b392d9bcf43dbbea1ce03b3220eee6a13
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.2"
   leak_tracker:
     dependency: transitive
     description:
