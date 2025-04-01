@@ -43,7 +43,7 @@ class NetworkCaller {
         );
       }
     } catch (e) {
-      _responseLog(url, -1, null, {}, true,e);
+      _responseLog(url, -1, null, {}, false,e);
 
       return NetworkResponse(
         isSuccess: false,
@@ -93,7 +93,7 @@ class NetworkCaller {
         );
       }
     } catch (e) {
-      _responseLog(url, -1, null, {}, true,e);
+      _responseLog(url, -1, null, {}, false,e);
       return NetworkResponse(
         isSuccess: false,
         statusCode: -1,
