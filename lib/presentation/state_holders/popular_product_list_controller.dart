@@ -1,38 +1,40 @@
 import 'package:crafty_bay_app/data/models/network_response.dart';
-import 'package:crafty_bay_app/data/models/slider_list_model.dart';
-import 'package:crafty_bay_app/data/models/slider_model.dart';
+import 'package:crafty_bay_app/data/models/product_list_model.dart';
+import 'package:crafty_bay_app/data/models/product_model.dart';
 import 'package:crafty_bay_app/data/services/network_caller.dart';
 import 'package:crafty_bay_app/data/uttils/urls.dart';
 import 'package:get/get.dart';
 
-class SliderListController extends GetxController {
+class PopularProductListController extends GetxController {
   bool _inProgress = false;
-
-  String? _errorMessage;
-
-  List<SliderModel> _sliderList = [];
-
-  String get errorMessage => errorMessage;
-
-  List<SliderModel> get sliders => _sliderList;
 
   bool get inProgress => _inProgress;
 
-  Future<bool> getSliderList() async {
+  List<ProductModel> _productList = [];
+
+  List<ProductModel> get productList => _productList;
+
+  String? _errorMessage;
+
+  String? get errorMessage => _errorMessage;
+
+  Future<bool> getPopularProductList() async {
     bool isSuccess = false;
     _inProgress = true;
     update();
     final NetworkResponse response = await Get.find<NetworkCaller>().getRequest(
-      url: Urls.sliderListUrl,
+      url: Urls.productListByRemark("popular"),
     );
     if (response.isSuccess) {
+      _productList =
+          ProductListModel.fromJson(response.responseData).productList ?? [];
       isSuccess = true;
       _errorMessage = null;
-      _sliderList = SliderListModel.fromJson(response.responseData).sliderList ?? [];
     } else {
       _errorMessage = response.errorMessage;
     }
     _inProgress = false;
+
     update();
     return isSuccess;
   }

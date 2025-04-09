@@ -1,12 +1,14 @@
-import 'package:crafty_bay_app/presentation/state_holders/slider_list_controller.dart';
+import 'package:crafty_bay_app/presentation/state_holders/category_list_controller.dart';
+import 'package:crafty_bay_app/presentation/state_holders/new_product_list_controller.dart';
+import 'package:crafty_bay_app/presentation/state_holders/popular_product_list_controller.dart';
+import 'package:crafty_bay_app/presentation/state_holders/special_product_list_controller.dart';
 import 'package:crafty_bay_app/presentation/ui/utils/assets_path.dart';
+import 'package:crafty_bay_app/presentation/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../state_holders/bottom_nav_bar_controller.dart';
 import '../widgets/widgets.dart';
-
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,14 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    Get.find<SliderListController>().getSliderList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,25 +46,68 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPopularProductsSection(){
+  Widget _buildPopularProductsSection() {
     return Column(
       children: [
         SectionHeader(title: "Popular", onTap: () {}),
-        SizedBox(height: 180, child: HorizontalProductListView()),
+        SizedBox(
+          height: 180,
+          child: GetBuilder<PopularProductListController>(
+            builder: (popularProductListController) {
+              return Visibility(
+                visible: !popularProductListController.inProgress,
+                replacement: CircularProgressIndicator(),
+                child: HorizontalProductListView(
+                  productList: popularProductListController.productList,
+                ),
+              );
+            },
+          ),
+        ),
       ],
     );
-  }  Widget _buildNewProductsSection(){
+  }
+
+  Widget _buildNewProductsSection() {
     return Column(
       children: [
-        SectionHeader(title: "Popular", onTap: () {}),
-        SizedBox(height: 180, child: HorizontalProductListView()),
+        SectionHeader(title: "New", onTap: () {}),
+        SizedBox(
+          height: 180,
+          child: GetBuilder<NewProductListController>(
+            builder: (newProductListController) {
+              return Visibility(
+                visible: !newProductListController.inProgress,
+                replacement: CircularProgressIndicator(),
+                child: HorizontalProductListView(
+                  productList: newProductListController.productList,
+                ),
+              );
+            },
+          ),
+        ),
       ],
     );
-  }  Widget _buildSpecialProductsSection(){
+  }
+
+  Widget _buildSpecialProductsSection() {
     return Column(
       children: [
-        SectionHeader(title: "Popular", onTap: () {}),
-        SizedBox(height: 180, child: HorizontalProductListView()),
+        SectionHeader(title: "Special", onTap: () {}),
+        SizedBox(
+          height: 180,
+          child: GetBuilder<SpecialProductListController>(
+            builder: (specialProductListController) {
+              return Visibility(
+                visible: !specialProductListController.inProgress,
+                replacement: CircularProgressIndicator(),
+                child: HorizontalProductListView(
+                  productList: specialProductListController.productList,
+                ),
+              );
+            },
+          ),
+        ),
       ],
     );
   }
@@ -78,17 +115,30 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCategoriesSection() {
     return Column(
       children: [
-        SectionHeader(title: "Categories", onTap: () {
-          Get.find<BottomNavBarController>().selectCategory();
-        }),
+        SectionHeader(
+          title: "Categories",
+          onTap: () {
+            Get.find<BottomNavBarController>().selectCategory();
+          },
+        ),
         SizedBox(height: 8),
-        SizedBox(height: 140, child:  HorizontalCategoryListView()),
+        SizedBox(
+          height: 140,
+          child: GetBuilder<CategoryListController>(
+            builder: (categoryListController) {
+              return Visibility(
+                visible: !categoryListController.inProgress,
+                replacement: CenteredCircularProgressIndicator(),
+                child: HorizontalCategoryListView(
+                  categoryList: categoryListController.categoryList,
+                ),
+              );
+            },
+          ),
+        ),
       ],
     );
   }
-
-
-
 
   AppBar _buildAppBar() {
     return AppBar(
@@ -104,6 +154,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-
-

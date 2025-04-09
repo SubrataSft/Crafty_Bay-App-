@@ -1,18 +1,23 @@
+import 'package:crafty_bay_app/data/models/product_model.dart';
 import 'package:crafty_bay_app/presentation/ui/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalProductListView extends StatelessWidget {
   const HorizontalProductListView({
-    super.key,
+    super.key, required this.productList,
   });
+
+  final List<ProductModel> productList;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       scrollDirection: Axis.horizontal,
-      itemCount: 10,
+      itemCount: productList.length,
       itemBuilder: (context, index) {
-        return ProductCard();
+        return ProductCard(product: productList[index],
+          
+        );
       },
       separatorBuilder: (_, __) => SizedBox(width: 8),
     );
