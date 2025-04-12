@@ -52,48 +52,54 @@ class _HomeBannerSliderState extends State<HomeBannerSlider> {
             return Builder(
               builder: (BuildContext context) {
                 return Container(
-                  width: MediaQuery.of(context).size.width,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
                   margin: EdgeInsets.symmetric(horizontal: 2),
                   decoration: BoxDecoration(
                     color: AppColors.themColor,
                     borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(image: NetworkImage(slider.image ?? ""),
+                    fit: BoxFit.cover
+                    )
                   ),
-                  alignment: Alignment.center,
-                  child: Row(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Placeholder(fallbackHeight: 100, fallbackWidth: 100),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              slider.price ?? '',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleLarge?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            SizedBox(
-                              height: 50,
-                              width: 124,
+                      Text(
+                        slider.price ?? '',
+                        textAlign: TextAlign.center,
+                        style: Theme
+                            .of(
+                          context,
+                        )
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      SizedBox(
+                        height: 50,
+                        width: 124,
 
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: AppColors.themColor,
-                                ),
-                                onPressed: () {},
-                                child: Text("Buy now"),
-                              ),
-                            ),
-                          ],
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: AppColors.themColor,
+                          ),
+                          onPressed: () {},
+                          child: Text("Buy now"),
                         ),
                       ),
                     ],
+                          ),
                   ),
                 );
               },

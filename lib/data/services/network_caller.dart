@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crafty_bay_app/data/models/network_response.dart';
+import 'package:crafty_bay_app/presentation/state_holders/auth_controller.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 
@@ -9,11 +10,17 @@ class NetworkCaller {
 
   NetworkCaller({required this.logger});
 
-  Future<NetworkResponse> getRequest({required String url}) async {
+  Future<NetworkResponse> getRequest({
+    required String url,
+    String? token,
+  }) async {
     try {
       Uri uri = Uri.parse(url);
       _requestLog(url, {}, {}, "");
-      final Response response = await get(uri, headers: {"token": ""});
+      final Response response = await get(
+        uri,
+        headers: {"token": "${token ?? AuthController.accessToken}"},
+      );
       if (response.statusCode == 200) {
         _responseLog(
           url,
@@ -43,7 +50,7 @@ class NetworkCaller {
         );
       }
     } catch (e) {
-      _responseLog(url, -1, null, {}, false,e);
+      _responseLog(url, -1, null, {}, false, e);
 
       return NetworkResponse(
         isSuccess: false,
@@ -59,10 +66,13 @@ class NetworkCaller {
   }) async {
     try {
       Uri uri = Uri.parse(url);
-      _requestLog(url, {}, body ??{}, "");
+      _requestLog(url, {}, body ?? {}, AuthController.accessToken ?? "");
       final Response response = await post(
         uri,
-        headers: {"token": "", "content-type": "Application/json"},
+        headers: {
+          "token": "${AuthController.accessToken}",
+          "content-type": "Application/json",
+        },
         body: jsonEncode(body),
       );
       if (response.statusCode == 200) {
@@ -93,7 +103,7 @@ class NetworkCaller {
         );
       }
     } catch (e) {
-      _responseLog(url, -1, null, {}, false,e);
+      _responseLog(url, -1, null, {}, false, e);
       return NetworkResponse(
         isSuccess: false,
         statusCode: -1,
@@ -121,8 +131,9 @@ class NetworkCaller {
     int statusCode,
     dynamic responseBody,
     Map<String, dynamic> headers,
-    bool isSuccess,[dynamic error]
-  ) {
+    bool isSuccess, [
+    dynamic error,
+  ]) {
     String message = """
     Url:$url,
     Status Code:$statusCode,

@@ -28,7 +28,8 @@ class CategoryCard extends StatelessWidget {
               color: AppColors.themColor.withAlpha(24),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Icons.computer, size: 48, color: AppColors.themColor),
+            child: Image.network(categoryModel.categoryImg ?? "",width: 48,),
+
           ),
           SizedBox(height: 4),
           Text(

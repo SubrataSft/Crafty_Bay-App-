@@ -1,8 +1,9 @@
 import 'package:crafty_bay_app/data/models/product_details_model.dart';
-import 'package:crafty_bay_app/data/models/product_model.dart';
+import 'package:crafty_bay_app/presentation/state_holders/auth_controller.dart';
 import 'package:crafty_bay_app/presentation/state_holders/product_details_controller.dart';
+import 'package:crafty_bay_app/presentation/ui/screens/email_verification_screen.dart';
+import 'package:crafty_bay_app/presentation/ui/utils/snack_message.dart';
 import 'package:crafty_bay_app/presentation/ui/widgets/centered_circular_progress_indicator.dart';
-import 'package:crafty_bay_app/presentation/ui/widgets/color_picker.dart';
 import 'package:crafty_bay_app/presentation/ui/widgets/product_image_slider.dart';
 import 'package:crafty_bay_app/presentation/ui/widgets/size_picker.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:item_count_number_button/item_count_number_button.dart';
 
+import '../../state_holders/add_to_cart_controller.dart';
 import '../utils/app_colors.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -22,6 +24,10 @@ class ProductDetailsScreen extends StatefulWidget {
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  String _selectedColor = "";
+  String _selectedSize = "";
+  int quantity = 1;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -113,7 +119,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 // SizedBox(height: 16),
                 SizePicker(
                   sizes: product.color!.split(','),
-                  onSizeSelected: (String selectedSize) {},
+                  onSizeSelected: (String selectedColor) {
+                    _selectedColor = selectedColor;
+                  },
+                ),
+                SizedBox(height: 16),
+                SizePicker(
+                  sizes: product.size!.split(','),
+                  onSizeSelected: (String selectedSize) {
+                    _selectedSize = selectedSize;
+                  },
                 ),
                 SizedBox(height: 16),
                 _buildDescriptionSection(product),
@@ -150,11 +165,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
         ),
         ItemCount(
-          initialValue: 1,
+          initialValue: quantity,
           minValue: 1,
           maxValue: 20,
           decimalPlaces: 0,
-          onChanged: (value) {},
+          onChanged: (value) {
+            quantity = value.toInt();
+          },
         ),
       ],
     );
@@ -202,10 +219,48 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
           SizedBox(
             width: 150,
-            child: ElevatedButton(onPressed: () {}, child: Text("Add to Cart")),
+            child: GetBuilder<AddToCartController>(
+              builder: (addToCartController) {
+                return Visibility(
+                  visible: !addToCartController.inProgress,
+                  replacement: CenteredCircularProgressIndicator(),
+                  child: ElevatedButton(
+                    onPressed: _onTapAddToCart,
+                    child: Text("Add to Cart"),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _onTapAddToCart() async {
+    bool isLoggedInUser = Get.find<AuthController>().isLoggedInUser();
+    if (isLoggedInUser) {
+      final result = await Get.find<AddToCartController>().AddToCart(
+        widget.productId,
+        _selectedColor,
+        _selectedSize,
+        quantity,
+      );
+      if (result) {
+        if (mounted) {
+          showSnackBarMessage(context, "Added to cart");
+        }
+      } else {
+        if (mounted) {
+          showSnackBarMessage(
+            context,
+            Get.find<AddToCartController>().errorMessage!,
+            true,
+          );
+        }
+      }
+    } else {
+      Get.to(() => EmailVerificationScreen());
+    }
   }
 }
