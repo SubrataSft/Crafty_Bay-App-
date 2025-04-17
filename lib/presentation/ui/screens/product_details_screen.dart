@@ -1,4 +1,4 @@
-import 'package:crafty_bay_app/data/models/product_details_model.dart';
+/* import 'package:crafty_bay_app/data/models/product_details_model.dart';
 import 'package:crafty_bay_app/presentation/state_holders/auth_controller.dart';
 import 'package:crafty_bay_app/presentation/state_holders/product_details_controller.dart';
 import 'package:crafty_bay_app/presentation/ui/screens/email_verification_screen.dart';
@@ -62,6 +62,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Widget _buildProductDetails(ProductDetailsModel product) {
+    List<String> colors = product.color!.split(',');
+    List<String> sizes = product.size!.split(',');
+    _selectedColor = colors.first;
+    _selectedSize = sizes.first;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -118,14 +122,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 // ),
                 // SizedBox(height: 16),
                 SizePicker(
-                  sizes: product.color!.split(','),
+                  sizes: colors,
                   onSizeSelected: (String selectedColor) {
                     _selectedColor = selectedColor;
                   },
                 ),
                 SizedBox(height: 16),
                 SizePicker(
-                  sizes: product.size!.split(','),
+                  sizes: sizes,
                   onSizeSelected: (String selectedSize) {
                     _selectedSize = selectedSize;
                   },
@@ -171,6 +175,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           decimalPlaces: 0,
           onChanged: (value) {
             quantity = value.toInt();
+            setState(() {});
           },
         ),
       ],
@@ -261,6 +266,280 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       }
     } else {
       Get.to(() => EmailVerificationScreen());
+    }
+  }
+}
+ */
+import 'package:crafty_bay_app/data/models/product_details_model.dart';
+import 'package:crafty_bay_app/presentation/state_holders/auth_controller.dart';
+import 'package:crafty_bay_app/presentation/state_holders/product_details_controller.dart';
+import 'package:crafty_bay_app/presentation/ui/screens/email_verification_screen.dart';
+import 'package:crafty_bay_app/presentation/ui/widgets/centered_circular_progress_indicator.dart';
+import 'package:crafty_bay_app/presentation/ui/widgets/product_image_slider.dart';
+import 'package:crafty_bay_app/presentation/ui/widgets/size_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:item_count_number_button/item_count_number_button.dart';
+
+import '../../state_holders/add_to_cart_controller.dart';
+import '../utils/app_colors.dart';
+
+class ProductDetailsScreen extends StatefulWidget {
+  const ProductDetailsScreen({super.key, required this.productId});
+
+  final int productId;
+
+  @override
+  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  String _selectedColor = "";
+  String _selectedSize = "";
+  int quantity = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    Get.find<ProductDetailsController>().getProductDetails(widget.productId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Product Details"),
+      ), // "Product Details" translated to Bengali
+      body: GetBuilder<ProductDetailsController>(
+        builder: (productListController) {
+          if (productListController.inProgress) {
+            return const CenteredCircularProgressIndicator();
+          }
+          if (productListController.errorMessage != null) {
+            return Center(child: Text(productListController.errorMessage!));
+          }
+
+          return Column(
+            children: [
+              Expanded(
+                child: _buildProductDetails(productListController.product!),
+              ),
+              _buildPriceAndAddToCartSection(productListController.product!),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildProductDetails(ProductDetailsModel product) {
+    List<String> colors = product.color!.split(',');
+    List<String> sizes = product.size!.split(',');
+    _selectedColor = colors.first;
+    _selectedSize = sizes.first;
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ProductImageSlider(
+            sliderUrls: [
+              product.img1!,
+              product.img2!,
+              product.img3!,
+              product.img4!,
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildNameAndQuantitySection(product),
+                const SizedBox(height: 4),
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    _buildRatingAndReviewSection(product),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        'Reviews', // "Reviews" translated to Bengali
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      color: AppColors.themColor,
+                      child: const Icon(
+                        Icons.favorite,
+                        size: 24,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                SizePicker(
+                  sizes: colors,
+                  onSizeSelected: (String selectedColor) {
+                    _selectedColor = selectedColor;
+                  },
+                ),
+                const SizedBox(height: 16),
+                SizePicker(
+                  sizes: sizes,
+                  onSizeSelected: (String selectedSize) {
+                    _selectedSize = selectedSize;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildDescriptionSection(product),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDescriptionSection(ProductDetailsModel productDetails) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Details",
+          style: Theme.of(context).textTheme.titleMedium,
+        ), // "Description" translated
+        const SizedBox(height: 8),
+        Text(
+          productDetails.product?.shortDes ?? "",
+          style: const TextStyle(color: Colors.black54),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNameAndQuantitySection(ProductDetailsModel productDetails) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Text(
+            productDetails.product?.title ?? "",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+        ItemCount(
+          initialValue: quantity,
+          minValue: 1,
+          maxValue: 20,
+          decimalPlaces: 0,
+          onChanged: (value) {
+            quantity = value.toInt();
+            setState(() {});
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRatingAndReviewSection(ProductDetailsModel productDetails) {
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        const Icon(Icons.star, color: Colors.amber),
+        Text(
+          "${productDetails.product?.star ?? ""}",
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.black54,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPriceAndAddToCartSection(ProductDetailsModel productDetails) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.themColor.withAlpha(26),
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(8),
+          topLeft: Radius.circular(8),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text("Price"), // "Price" translated
+              Text(
+                "\$${productDetails.product?.price}",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.themColor,
+                  fontSize: 18,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            width: 150,
+            child: GetBuilder<AddToCartController>(
+              builder: (addToCartController) {
+                return Visibility(
+                  visible: !addToCartController.inProgress,
+                  replacement: const CenteredCircularProgressIndicator(),
+                  child: ElevatedButton(
+                    onPressed: _onTapAddToCart,
+                    child: const Text(
+                      "Add To Cart",
+                    ), // "Add to Cart" translated
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _onTapAddToCart() async {
+    bool isLoggedInUser = Get.find<AuthController>().isLoggedInUser();
+    if (isLoggedInUser) {
+      final result = await Get.find<AddToCartController>().AddToCart(
+        widget.productId,
+        _selectedColor,
+        _selectedSize,
+        quantity,
+      );
+      if (result) {
+        Get.snackbar(
+          'success', // "Success" translated
+          'Added to cart', // "Added to cart" translated
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          'Error', // "Error" translated
+          Get.find<AddToCartController>().errorMessage!,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } else {
+      Get.to(() => const EmailVerificationScreen());
     }
   }
 }

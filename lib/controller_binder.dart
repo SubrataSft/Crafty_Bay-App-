@@ -5,6 +5,7 @@ import 'package:crafty_bay_app/presentation/state_holders/bottom_nav_bar_control
 import 'package:crafty_bay_app/presentation/state_holders/category_list_controller.dart';
 import 'package:crafty_bay_app/presentation/state_holders/email_verification_controller.dart';
 import 'package:crafty_bay_app/presentation/state_holders/new_product_list_controller.dart';
+import 'package:crafty_bay_app/presentation/state_holders/paymetn_method_list_controller.dart';
 import 'package:crafty_bay_app/presentation/state_holders/popular_product_list_controller.dart';
 import 'package:crafty_bay_app/presentation/state_holders/product_details_controller.dart';
 import 'package:crafty_bay_app/presentation/state_holders/product_list_by_category_controller.dart';
@@ -21,7 +22,13 @@ class ControllerBinder extends Bindings {
   void dependencies() {
     Get.put(BottomNavBarController());
     Get.put(Logger());
-    Get.put(NetworkCaller(logger: Get.find<Logger>()));
+    Get.put(AuthController());
+    Get.put(
+      NetworkCaller(
+        logger: Get.find<Logger>(),
+        authController: Get.find<AuthController>(),
+      ),
+    );
     Get.put(SliderListController());
     Get.put(CategoryListController());
     Get.put(NewProductListController());
@@ -29,10 +36,10 @@ class ControllerBinder extends Bindings {
     Get.put(SpecialProductListController());
     Get.put(ProductListByCategoryController());
     Get.put(ProductDetailsController());
-    Get.put(AuthController());
     Get.put(AddToCartController());
-    Get.lazyPut(() => EmailVerificationController());
-    Get.lazyPut(() => OtpVerificationController());
-    Get.lazyPut(() => ReadProfileController());
+    Get.put( EmailVerificationController());
+    Get.put( OtpVerificationController());
+    Get.put(ReadProfileController());
+    Get.put(PaymentMethodListController());
   }
 }

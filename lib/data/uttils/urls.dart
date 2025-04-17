@@ -5,6 +5,7 @@ class Urls {
   static String categoryListUrl = "$_baseUrl/CategoryList";
   static String readProfileUrl = "$_baseUrl/ReadProfile";
   static String addToCart = "$_baseUrl/CreateCartList";
+  static String createInvoice = "$_baseUrl/InvoiceCreate";
 
   static String productListByRemark(String remark) =>
       "$_baseUrl/ListProductByRemark/$remark";

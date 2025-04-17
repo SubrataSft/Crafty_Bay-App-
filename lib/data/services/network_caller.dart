@@ -2,13 +2,16 @@ import 'dart:convert';
 
 import 'package:crafty_bay_app/data/models/network_response.dart';
 import 'package:crafty_bay_app/presentation/state_holders/auth_controller.dart';
+import 'package:crafty_bay_app/presentation/ui/screens/email_verification_screen.dart';
+import 'package:get/get.dart' as getx;
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 
 class NetworkCaller {
   final Logger logger;
+  final AuthController authController;
 
-  NetworkCaller({required this.logger});
+  NetworkCaller({required this.logger, required this.authController});
 
   Future<NetworkResponse> getRequest({
     required String url,
@@ -43,7 +46,9 @@ class NetworkCaller {
           response.headers,
           false,
         );
-
+        if (response.statusCode == 401) {
+          _moveToLogin();
+        }
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
@@ -97,6 +102,9 @@ class NetworkCaller {
           response.headers,
           false,
         );
+        if (response.statusCode == 401) {
+          _moveToLogin();
+        }
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
@@ -110,6 +118,11 @@ class NetworkCaller {
         errorMessage: e.toString(),
       );
     }
+  }
+
+  Future<void> _moveToLogin() async {
+    await authController.clearUserData();
+    getx.Get.to(() => EmailVerificationScreen());
   }
 
   void _requestLog(
